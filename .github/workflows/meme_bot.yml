@@ -1,0 +1,29 @@
+name: AI Meme Bot
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"  # Запуск каждые 6 часов
+
+jobs:
+  run_bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: pip install tweepy openai requests pillow
+
+      - name: Run bot
+        env:
+          API_KEY: ${{ yla0Q9iuhaa2i8fA0wDrPGxrD }}
+          API_SECRET: ${{ eFIcyGHgT2YPsjK9diKMD04hlReB27q3buEfsMNSP0n6JZmqD1 }}
+          ACCESS_TOKEN: ${{ 1806544580482863104-CD66W8WLtWsg99XhwhOVmjaugt1gE5 }}
+          ACCESS_SECRET: ${{ EBmXx1p0yfaFLZ1CRgm6sLikl0Rf4su7VaEDFLElVTQhX }}
+          OPENAI_API_KEY: ${{ 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 }}
+        run: python meme_bot.py
