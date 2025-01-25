@@ -51,6 +51,13 @@ def generate_meme_text(trend, news):
     )
     return response['choices'][0]['message']['content']
 
+# Проверка аутентификации в Twitter
+try:
+    api.verify_credentials()
+    print("Authentication successful!")
+except tweepy.TweepError as e:
+    print(f"Authentication failed: {e}")
+
 # Функция публикации мема в Twitter
 def post_meme():
     trends = get_google_trends()
