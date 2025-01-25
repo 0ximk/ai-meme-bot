@@ -54,6 +54,4 @@ def post_meme():
 if __name__ == "__main__":
     post_meme()
 
-    - name: Install dependencies
-  run: pip install tweepy openai requests --upgrade
 
