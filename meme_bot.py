@@ -1,6 +1,7 @@
-import requests
-import openai
 import tweepy
+import openai
+import requests
+from pytrends.request import TrendReq
 import os
 
 # Получаем API-ключи из переменных окружения
@@ -13,45 +14,56 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 # Настройка API-ключа OpenAI
 openai.api_key = OPENAI_API_KEY
 
-# Авторизация в Twitter API (для публикации)
+# Авторизация в Twitter API
 auth = tweepy.OAuthHandler(API_KEY, API_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
 api = tweepy.API(auth, wait_on_rate_limit=True)
 
-# Функция получения новостей о криптовалютах с CoinGecko API
+# Функция получения трендов из Google Trends
+def get_google_trends():
+    pytrends = TrendReq(hl='en-US', tz=360)
+    pytrends.build_payload(["cryptocurrency", "bitcoin", "memecoin"], cat=0, timeframe='now 1-d', geo='US')
+    trends = pytrends.related_queries()
+    trending_topics = []
+
+    for keyword in ["cryptocurrency", "bitcoin", "memecoin"]:
+        if keyword in trends:
+            queries = trends[keyword]["top"]
+            if queries is not None:
+                trending_topics.extend(queries["query"].tolist())
+
+    return trending_topics[:5]
+
+# Функция получения криптовалютных новостей с CoinGecko
 def get_crypto_news():
     url = "https://api.coingecko.com/api/v3/news"
     response = requests.get(url)
-    
     if response.status_code == 200:
-        news_data = response.json()
-        top_news = [article["title"] for article in news_data["data"][:5]]
-        return top_news
+        news = response.json()["data"]
+        return [article["title"] for article in news[:5]]
     else:
-        print("Error fetching news from CoinGecko")
-        return ["No news available"]
+        return ["No news available."]
 
-# Функция генерации текста мема на основе крипто-новостей
-def generate_meme_text(news):
-    prompt = f"Создай смешной твит на основе новости: '{news}' в одном предложении"
+# Функция генерации шутки на основе трендов и новостей
+def generate_meme_text(trend, news):
+    prompt = f"Создай смешной мем про криптовалюту, включая {trend} и новость: {news}"
     response = openai.ChatCompletion.create(
         model="gpt-4",
-        messages=[{"role": "system", "content": "You are a funny meme generator."},
-                  {"role": "user", "content": prompt}]
+        messages=[{"role": "user", "content": prompt}]
     )
-    return response.choices[0].message['content']
+    return response['choices'][0]['message']['content']
 
-# Функция публикации текстового мема в Twitter
+# Функция публикации мема в Twitter
 def post_meme():
-    news_list = get_crypto_news()
-    if news_list:
-        meme_text = generate_meme_text(news_list[0])
-        api.update_status(status=f"{meme_text}\n\n#Crypto #Meme #CoinGecko")
-        print("Text meme successfully posted!")
+    trends = get_google_trends()
+    news = get_crypto_news()
+
+    if trends and news:
+        meme_text = generate_meme_text(trends[0], news[0])
+        api.update_status(status=f"{meme_text}\n\n#Crypto #Meme #Trends")
+        print("Мем успешно опубликован!")
     else:
-        print("No crypto news found.")
+        print("Не удалось получить тренды или новости.")
 
 if __name__ == "__main__":
     post_meme()
-
-
