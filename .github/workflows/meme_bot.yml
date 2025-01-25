@@ -1,8 +1,9 @@
 name: AI Meme Bot
 
 on:
+  workflow_dispatch:  # Позволяет ручной запуск с кнопки
   schedule:
-    - cron: "0 */6 * * *"  # Запуск каждые 6 часов
+    - cron: "0 */6 * * *"  # Автоматический запуск каждые 6 часов
 
 jobs:
   run_bot:
@@ -27,3 +28,4 @@ jobs:
           ACCESS_SECRET: ${{ secrets.ACCESS_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: python meme_bot.py
+        
