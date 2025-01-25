@@ -36,9 +36,10 @@ def generate_meme_text(news):
     prompt = f"Создай смешной твит на основе новости: '{news}' в одном предложении"
     response = openai.ChatCompletion.create(
         model="gpt-4",
-        messages=[{"role": "user", "content": prompt}]
+        messages=[{"role": "system", "content": "You are a funny meme generator."},
+                  {"role": "user", "content": prompt}]
     )
-    return response['choices'][0]['message']['content']
+    return response.choices[0].message['content']
 
 # Функция публикации текстового мема в Twitter
 def post_meme():
@@ -52,3 +53,7 @@ def post_meme():
 
 if __name__ == "__main__":
     post_meme()
+
+    - name: Install dependencies
+  run: pip install tweepy openai requests --upgrade
+
