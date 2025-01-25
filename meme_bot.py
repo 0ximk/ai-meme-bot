@@ -12,20 +12,28 @@ ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 ACCESS_SECRET = os.getenv('ACCESS_SECRET')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
-# Logging environment variables to debug
+# Логирование значений переменных окружения для отладки
 print(f"API_KEY: {API_KEY}")
 print(f"API_SECRET: {API_SECRET}")
 print(f"ACCESS_TOKEN: {ACCESS_TOKEN}")
 print(f"ACCESS_SECRET: {ACCESS_SECRET}")
 print(f"OPENAI_API_KEY: {OPENAI_API_KEY}")
 
+# Проверка наличия всех секретов
+if not all([API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_SECRET, OPENAI_API_KEY]):
+    raise ValueError("Не все секреты установлены. Проверьте переменные окружения.")
+
 # Настройка API-ключа OpenAI
 openai.api_key = OPENAI_API_KEY
 
 # Авторизация в Twitter API
-auth = tweepy.OAuthHandler(API_KEY, API_SECRET)
-auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
-api = tweepy.API(auth, wait_on_rate_limit=True)
+try:
+    auth = tweepy.OAuthHandler(API_KEY, API_SECRET)
+    auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
+    api = tweepy.API(auth, wait_on_rate_limit=True)
+except Exception as e:
+    print(f"Ошибка авторизации в Twitter API: {e}")
+    raise
 
 # Функция получения трендов из Google Trends
 def get_google_trends():
@@ -43,7 +51,7 @@ def get_google_trends():
 
         return trending_topics[:5]
     except Exception as e:
-        print(f"Error getting Google Trends: {e}")
+        print(f"Ошибка получения трендов Google Trends: {e}")
         return []
 
 # Функция получения новостей с Google News
@@ -54,7 +62,7 @@ def get_google_news():
         news_titles = [entry.title for entry in feed.entries[:5]]
         return news_titles
     except Exception as e:
-        print(f"Error getting Google News: {e}")
+        print(f"Ошибка получения новостей Google News: {e}")
         return ["No news available."]
 
 # Функция генерации шутки на основе трендов и новостей
@@ -67,8 +75,8 @@ def generate_meme_text(trend, news):
         )
         return response['choices'][0]['message']['content']
     except Exception as e:
-        print(f"Error generating meme text: {e}")
-        return "Failed to generate meme text."
+        print(f"Ошибка генерации текста мема: {e}")
+        return "Не удалось сгенерировать текст мема."
 
 # Функция публикации мема в Twitter
 def post_meme():
@@ -81,7 +89,7 @@ def post_meme():
             api.update_status(status=f"{meme_text}\n\n#Crypto #Meme #Trends")
             print("Мем успешно опубликован!")
         except Exception as e:
-            print(f"Error posting meme: {e}")
+            print(f"Ошибка публикации мема: {e}")
     else:
         print("Не удалось получить тренды или новости.")
 
