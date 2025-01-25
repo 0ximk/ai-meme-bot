@@ -21,9 +21,9 @@ jobs:
 
       - name: Run bot
         env:
-          API_KEY: ${{ yla0Q9iuhaa2i8fA0wDrPGxrD }}
-          API_SECRET: ${{ eFIcyGHgT2YPsjK9diKMD04hlReB27q3buEfsMNSP0n6JZmqD1 }}
-          ACCESS_TOKEN: ${{ 1806544580482863104-CD66W8WLtWsg99XhwhOVmjaugt1gE5 }}
-          ACCESS_SECRET: ${{ EBmXx1p0yfaFLZ1CRgm6sLikl0Rf4su7VaEDFLElVTQhX }}
+          API_KEY: ${{ secrets.API_KEY }}
+          API_SECRET: ${{ secrets.API_SECRET }}
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          ACCESS_SECRET: ${{ secrets.ACCESS_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: python meme_bot.py
