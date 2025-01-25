@@ -1,9 +1,9 @@
-name: AI Meme Bot
+name: AI Text Meme Bot
 
 on:
-  workflow_dispatch:  # Позволяет ручной запуск с кнопки
+  workflow_dispatch:  # Позволяет запуск вручную
   schedule:
-    - cron: "0 */6 * * *"  # Автоматический запуск каждые 6 часов
+    - cron: "0 */6 * * *"  # Запуск каждые 6 часов
 
 jobs:
   run_bot:
@@ -18,7 +18,7 @@ jobs:
           python-version: '3.8'
 
       - name: Install dependencies
-        run: pip install tweepy openai requests pillow
+        run: pip install tweepy openai
 
       - name: Run bot
         env:
@@ -28,4 +28,3 @@ jobs:
           ACCESS_SECRET: ${{ secrets.ACCESS_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: python meme_bot.py
-        
